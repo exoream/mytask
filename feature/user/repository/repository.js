@@ -1,11 +1,13 @@
-const User  = require("../model/model");
+const User = require("../model/model");
 const {
   usersCoreToUsersModel,
   listUserCoreToUserModel,
   usersModelToUsersCore,
   listUserModelToUserCore,
 } = require("../entity/mapping");
-const { UserRepository }= require("../entity/interface");
+const { UserRepository } = require("../entity/interface");
+const { NotFoundError } = require("../../../utils/helper/response");
+
 class UserRepositoryImpl extends UserRepository {
   constructor(db) {
     super();
@@ -21,7 +23,7 @@ class UserRepositoryImpl extends UserRepository {
   async getById(id) {
     const user = await User.findByPk(id);
     if (!user) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
     const userCore = usersModelToUsersCore(user);
     return userCore;
@@ -39,7 +41,7 @@ class UserRepositoryImpl extends UserRepository {
       where: { id: id },
     });
     if (updatedUser[0] === 0) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
     return usersModelToUsersCore(updatedUser);
   }
@@ -49,9 +51,20 @@ class UserRepositoryImpl extends UserRepository {
       where: { id: id },
     });
     if (deletedUser === 0) {
-      throw new Error("User not found");
+      throw new NotFoundError("User not found");
     }
     return true;
+  }
+
+  async getByEmail(email) {
+    const user = await User.findOne({
+      where: { email: email },
+    });
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+    const userCore = usersModelToUsersCore(user);
+    return userCore;
   }
 }
 
