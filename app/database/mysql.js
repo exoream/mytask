@@ -1,19 +1,21 @@
 const { Sequelize } = require("sequelize");
-const User = require("../../feature/user/model/model");
+const config = require("../config/config");
 
-function initMysqlConn(config) {
+async function initDB() {
   const sequelize = new Sequelize(config.DBNAME, config.DBUSER, config.DBPASS, {
     host: config.DBHOST,
     port: config.DBPORT,
-    dialect: "mysql",
-    logging: true,
-    define: {
-      timestamps: false,
-    },
+    dialect: 'mysql',
   });
-
-  return sequelize;
+  try {
+    await sequelize.authenticate();
+    console.log('MySQL connected');
+    return sequelize;
+  } catch (error) {
+    console.error('Failed to connect to MySQL:', error);
+    process.exit(1);
+  }
 }
 
 
-module.exports = { initMysqlConn };
+module.exports = initDB;

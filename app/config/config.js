@@ -50,4 +50,16 @@ function initConfig() {
     return config;
 }
 
-module.exports = { AppConfig, initConfig };
+
+const config = {
+  SERVERPORT: process.env.SERVERPORT ? parseInt(process.env.SERVERPORT) : 8080,
+  DBPORT: process.env.DBPORT ? parseInt(process.env.DBPORT) : 3306,
+  DBHOST: process.env.DBHOST || 'localhost',
+  DBUSER: process.env.DBUSER || 'root',
+  DBPASS: process.env.DBPASS || '',
+  DBNAME: process.env.DBNAME || 'task',
+};
+
+
+
+module.exports = config;

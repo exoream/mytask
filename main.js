@@ -1,18 +1,23 @@
 const express = require("express");
 const { initConfig } = require("./app/config/config");
-const { initMysqlConn } = require("./app/database/mysql");
-const initRoutes = require("./app/route/route");
-const migrate = require("./app/migrate/migrate");
+const initDB = require("./app/database/mysql");
+const userRoutes = require("./app/route/route");
 
 const app = express();
+const PORT = process.env.PORT || 8080;
 
-(async () => {
-  const cfg = initConfig();
-  const dbMysql = initMysqlConn(cfg);
+app.use(express.json());
+app.use('/', userRoutes);
 
-  initRoutes(app, dbMysql);
+const startServer = async () => {
+  try {
+    await initDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
+};
 
-  app.listen(cfg.SERVERPORT, () => {
-    console.log(`Server is running on port ${cfg.SERVERPORT}`);
-  });
-})();
+startServer();

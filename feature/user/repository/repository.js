@@ -1,53 +1,56 @@
-const { UserRepository } = require('../entity/interface');
-const { User } = require('../model/model');
-const { mapMainToModel, mapModelToMain } = require('../entity/mapping');
-
+const User  = require("../model/model");
+const {
+  usersCoreToUsersModel,
+  listUserCoreToUserModel,
+  usersModelToUsersCore,
+  listUserModelToUserCore,
+} = require("../entity/mapping");
+const { UserRepository }= require("../entity/interface");
 class UserRepositoryImpl extends UserRepository {
-  constructor(sequelize) {
+  constructor(db) {
     super();
-    this.UserModel = User;
-    this.sequelize = sequelize;
+    this.db = db;
   }
 
   async create(data) {
-    const user = mapMainToModel(data);
-    const createdUser = await this.UserModel.create(user);
-    return mapModelToMain(createdUser);
+    const user = usersCoreToUsersModel(data);
+    const createdUser = await User.create(user);
+    return usersModelToUsersCore(createdUser);
   }
 
   async getById(id) {
-    const user = await this.UserModel.findByPk(id);
+    const user = await User.findByPk(id);
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
-    return mapModelToMain(user);
+    const userCore = usersModelToUsersCore(user);
+    return userCore;
   }
 
   async getAll() {
-    const users = await this.UserModel.findAll();
-    return users.map(user => mapModelToMain(user));
+    const users = await User.findAll();
+    const userList = listUserModelToUserCore(users);
+    return userList;
   }
 
   async update(id, updatedData) {
-    const user = await this.UserModel.findByPk(id);
-    if (!user) {
-      throw new Error('User not found');
+    const userModel = usersCoreToUsersModel(updatedData);
+    const updatedUser = await User.update(userModel, {
+      where: { id: id },
+    });
+    if (updatedUser[0] === 0) {
+      throw new Error("User not found");
     }
-
-    const updatedUser = mapMainToModel(updatedData);
-    await user.update(updatedUser);
-
-    return mapModelToMain(user);
+    return usersModelToUsersCore(updatedUser);
   }
 
   async delete(id) {
-    const user = await this.UserModel.findByPk(id);
-    if (!user) {
-      throw new Error('User not found');
+    const deletedUser = await User.destroy({
+      where: { id: id },
+    });
+    if (deletedUser === 0) {
+      throw new Error("User not found");
     }
-
-    await user.destroy();
-
     return true;
   }
 }

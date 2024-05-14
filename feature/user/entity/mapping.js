@@ -2,34 +2,52 @@ const UserCore = require("../entity/entity");
 const User = require("../model/model");
 
 // Mapping dari Main ke Model
-function mapMainToModel(mainData) {
-  return User.build({
+function usersCoreToUsersModel(mainData) {
+  return {
     id: mainData.id,
     name: mainData.name,
     email: mainData.email,
     password: mainData.password,
     role: mainData.role,
-  });
+  };
+}
+
+function listUserCoreToUserModel(mainData) {
+  const listUser = [];
+  for (const user of mainData) {
+    const userModel = usersCoreToUsersModel(user);
+    listUser.push(userModel);
+  }
+  return listUser;
 }
 
 // Mapping dari Model ke Main
-function mapModelToMain(modelData) {
-  return new UserCore(
-    modelData.id,
-    modelData.name,
-    modelData.email,
-    modelData.password,
-    modelData.role
+function usersModelToUsersCore(mainData) {
+  const userCore = new UserCore(
+    mainData.id,
+    mainData.name,
+    mainData.email,
+    mainData.password,
+    mainData.role
   );
+  return userCore;
 }
 
 // Mapping dari Model ke Main untuk array
-function modelToMainMapping(dataModel) {
-    return dataModel.map((value) => {
-        return mapModelToMain(value);
-    });
+function listUserModelToUserCore(mainData) {
+  const listUser = [];
+  for (const user of mainData) {
+    const userCore = usersModelToUsersCore(user);
+    listUser.push(userCore);
+  }
+  return listUser;
 }
 
 
 
-module.exports = { mapMainToModel, mapModelToMain, modelToMainMapping };
+module.exports = {
+  usersCoreToUsersModel,
+  listUserCoreToUserModel,
+  usersModelToUsersCore,
+  listUserModelToUserCore,
+};

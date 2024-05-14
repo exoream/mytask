@@ -1,28 +1,31 @@
-const UserRepository = require("../repository/repository");
+const UserRepositoryImpl = require("../repository/repository");
 const {
   generatePasswordHash,
   comparePasswordHash,
 } = require("../../../utils/helper/bcrypt");
+const { UserUseCase }= require("../entity/interface");
 
-class UserService {
-  constructor() {
-    this.userRepository = UserRepository;
+class UserService extends UserUseCase{
+  constructor(userRepo) {
+    super();
+    this.userRepo = userRepo;
   }
 
-  async create(user) {
+  async create(userCore) {
     try {
-      const hashedPassword = await generatePasswordHash(user.password);
-      user.password = hashedPassword;
-
-      return await this.userRepository.create(user);
+      const hashedPassword = await generatePasswordHash(userCore.password);
+      userCore.password = hashedPassword;
+      const user = await this.userRepo.create(userCore);
+      return user
     } catch (error) {
+      console.log(error);
       throw new Error("Failed to create user");
     }
   }
 
   async getById(id) {
     try {
-      const user = await this.userRepository.getById(id);
+      const user = await this.userRepo.getById(id);
       if (!user) {
         throw new Error("User not found");
       }
@@ -34,31 +37,34 @@ class UserService {
 
   async getAll() {
     try {
-      return await this.userRepository.getAll();
+      const users = await this.userRepo.getAll();
+      console.log('Data Users:', users);
+      return users;
     } catch (error) {
+      console.log(error);
       throw new Error("Failed to get all users");
     }
   }
 
   async update(id, user) {
     try {
-      const existingUser = await this.userRepository.getById(id);
+      const existingUser = await this.userRepo.getById(id);
       if (!existingUser) {
         throw new Error("User not found");
       }
 
-      const isPasswordValid = await comparePasswordHash(
-        user.password,
-        existingUser.password
-      );
-      if (!isPasswordValid) {
-        throw new Error("Invalid password");
-      }
+      // const isPasswordValid = await comparePasswordHash(
+      //   user.password,
+      //   existingUser.password
+      // );
+      // if (!isPasswordValid) {
+      //   throw new Error("Invalid password");
+      // }
 
-      const newPasswordHash = await generatePasswordHash(user.password);
-      existingUser.password = newPasswordHash;
+      // const newPasswordHash = await generatePasswordHash(user.password);
+      // existingUser.password = newPasswordHash;
 
-      const updatedUser = await this.userRepository.update(id, existingUser);
+      const updatedUser = await this.userRepo.update(id, user);
       if (!updatedUser) {
         throw new Error("Failed to update user");
       }
@@ -71,7 +77,7 @@ class UserService {
 
   async delete(id) {
     try {
-      const deletedUser = await this.userRepository.delete(id);
+      const deletedUser = await this.userRepo.delete(id);
       if (!deletedUser) {
         throw new Error("User not found");
       }
