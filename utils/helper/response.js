@@ -50,6 +50,14 @@ class UnauthorizedResponse {
   }
 }
 
+function successCreateResponse(res, data) {
+  return res.status(201).json({ message: data });
+}
+
+function successGetResponse(res, data) {
+  return res.status(200).json({ message: data });
+}
+
 
 module.exports = {
   NotFoundError,
@@ -60,4 +68,6 @@ module.exports = {
   ForbiddenResponse,
   UnauthorizedError,
   UnauthorizedResponse,
+  successCreateResponse,
+  successGetResponse,
 };

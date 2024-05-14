@@ -14,8 +14,8 @@ const router = express.Router();
 router.post('/users/login', userController.login.bind(userController));
 router.post('/users', userController.createUser.bind(userController));
 router.get('/users/:id', jwtMiddleware, userController.getUserById.bind(userController));
-router.get('/users', userController.getAllUsers.bind(userController));
-router.put('/users/:id', userController.updateUser.bind(userController));
-router.delete('/users/:id', userController.deleteUser.bind(userController));
+router.get('/users', jwtMiddleware, userController.getAllUsers.bind(userController));
+router.put('/users/:id', jwtMiddleware, userController.updateUser.bind(userController));
+router.delete('/users/:id', jwtMiddleware, userController.deleteUser.bind(userController));
 
 module.exports = router;

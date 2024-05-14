@@ -8,6 +8,11 @@ const {
 } = require("../../../utils/helper/response");
 const { extractToken } = require("../../../utils/jwt/jwt");
 const { userRequest } = require("../dto/request");
+const {
+  successCreateResponse,
+  successGetResponse,
+} = require("../../../utils/helper/response");
+const { userResponse, userListResponse, loginResponse } = require("../dto/response");
 
 class UserController {
   constructor(userService) {
@@ -19,7 +24,7 @@ class UserController {
 
     try {
       await this.userService.create(user);
-      res.status(201).json({ message: "User created successfully" });
+      return successCreateResponse(res, "User created successfully");
     } catch (error) {
       if (error instanceof ValidationError || error instanceof DuplicateError) {
         res.status(error.statusCode).json({ message: error.message });
@@ -35,7 +40,7 @@ class UserController {
       const { id, role } = extractToken(req);
       if (role === "admin" || id === Number(userId)) {
         const user = await this.userService.getById(userId);
-        res.status(200).json(user);
+        return userResponse(res, user);
       } else {
         ForbiddenResponse.sendUnauthorized(res);
       }
@@ -58,7 +63,7 @@ class UserController {
       const { role } = extractToken(req);
       if (role === "admin") {
         const users = await this.userService.getAll();
-        res.status(200).json(users);
+        return userListResponse(res, users);
       } else {
         ForbiddenResponse.sendUnauthorized(res);
       }
@@ -79,7 +84,7 @@ class UserController {
       const { id, role } = extractToken(req);
       if (role === "admin" || id === Number(userId)) {
         await this.userService.update(userId, user);
-        res.status(200).json({ message: "User updated successfully" });
+        return successGetResponse(res, "User updated successfully");
       } else {
         ForbiddenResponse.sendUnauthorized(res);
       }
@@ -101,7 +106,7 @@ class UserController {
       const { role } = extractToken(req);
       if (role === "admin") {
         await this.userService.delete(userId);
-        res.status(200).json({ message: "User deleted successfully" });
+        return successGetResponse(res, "User deleted successfully");
       } else {
         ForbiddenResponse.sendUnauthorized(res);
       }
@@ -119,7 +124,7 @@ class UserController {
 
     try {
       const { user, token } = await this.userService.login(email, password);
-      res.status(200).json({ user, token });
+      return loginResponse(res, user, token);
     } catch (error) {
       console.error(error);
       if (
