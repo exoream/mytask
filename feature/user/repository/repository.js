@@ -61,8 +61,8 @@ class UserRepositoryImpl extends UserRepository {
       where: { email: email },
     });
     if (!user) {
-      throw new NotFoundError("User not found");
-    }
+      return null;
+  }
     const userCore = usersModelToUsersCore(user);
     return userCore;
   }

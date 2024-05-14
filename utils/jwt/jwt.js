@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 // const { expressjwt: jwt } = require("express-jwt");
 const dotenv = require("dotenv");
+const { ForbiddenResponse, UnauthorizedResponse } = require("../helper/response");
 
 dotenv.config();
 const secretKey = process.env.JWTSECRET;
@@ -36,25 +37,21 @@ function jwtMiddleware(req, res, next) {
     const token = authHeader && authHeader.split(' ')[1]
     console.log('Token:', token);
 
-    if (!token) return res.sendStatus(401)
+    if (!token) {
+      return UnauthorizedResponse.sendUnauthorized(res);
+    }
   
     jwt.verify(token, secretKey, (err, user) => {
       console.log('JWT Verification Error:', err ? err.message : 'Unknown error');
       console.log('Secret Key:', secretKey);
-      if (err) return res.sendStatus(403)
+      if (err) {
+        return ForbiddenResponse.sendUnauthorized(res);
+      }
   
       req.user = user
   
       next()
     })
 }
-
-// Middleware untuk JWT
-// function jwtMiddleware() {
-//   return jwt({
-//     secret: secretKey,
-//     algorithms: ["HS256"],
-//   });
-// }
 
 module.exports = { createToken, jwtMiddleware, extractToken };

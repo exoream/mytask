@@ -39,6 +39,8 @@ class UserService extends UserUseCase {
     const hashedPassword = await generatePasswordHash(userCore.password);
     userCore.password = hashedPassword;
 
+    userCore.role = "user";
+
     const user = await this.userRepo.create(userCore);
     return user;
   }
@@ -76,6 +78,8 @@ class UserService extends UserUseCase {
     if (existingUser) {
       throw new DuplicateError("Email already in use");
     }
+
+    user.role = "user";
 
     const updatedUser = await this.userRepo.update(id, user);
     return updatedUser;

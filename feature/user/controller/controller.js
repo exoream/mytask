@@ -4,8 +4,10 @@ const {
   DuplicateError,
   AuthenticationError,
   UnauthorizedError,
+  ForbiddenResponse,
 } = require("../../../utils/helper/response");
 const { extractToken } = require("../../../utils/jwt/jwt");
+const { userRequest } = require("../dto/request");
 
 class UserController {
   constructor(userService) {
@@ -13,8 +15,7 @@ class UserController {
   }
 
   async createUser(req, res) {
-    const { name, email, password, role } = req.body;
-    const user = { name, email, password, role };
+    const user = userRequest(req.body);
 
     try {
       await this.userService.create(user);
@@ -32,14 +33,18 @@ class UserController {
     const userId = req.params.id;
     try {
       const { id, role } = extractToken(req);
-      if (id === Number(userId)) {
+      if (role === "admin" || id === Number(userId)) {
         const user = await this.userService.getById(userId);
         res.status(200).json(user);
       } else {
-        res.status(403).json({ message: "Unauthorized access" });
+        ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError || error instanceof UnauthorizedError) {
+      if (
+        error instanceof NotFoundError ||
+        error instanceof ValidationError ||
+        error instanceof UnauthorizedError
+      ) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         console.log(error);
@@ -50,8 +55,13 @@ class UserController {
 
   async getAllUsers(req, res) {
     try {
-      const users = await this.userService.getAll();
-      res.status(200).json(users);
+      const { role } = extractToken(req);
+      if (role === "admin") {
+        const users = await this.userService.getAll();
+        res.status(200).json(users);
+      } else {
+        ForbiddenResponse.sendUnauthorized(res);
+      }
     } catch (error) {
       if (error instanceof NotFoundError) {
         res.status(error.statusCode).json({ message: error.message });
@@ -63,11 +73,16 @@ class UserController {
 
   async updateUser(req, res) {
     const userId = req.params.id;
-    const user = req.body;
+    const user = userRequest(req.body);
 
     try {
-      await this.userService.update(userId, user);
-      res.status(200).json({ message: "User updated successfully" });
+      const { id, role } = extractToken(req);
+      if (role === "admin" || id === Number(userId)) {
+        await this.userService.update(userId, user);
+        res.status(200).json({ message: "User updated successfully" });
+      } else {
+        ForbiddenResponse.sendUnauthorized(res);
+      }
     } catch (error) {
       if (
         error instanceof NotFoundError ||
@@ -83,8 +98,13 @@ class UserController {
   async deleteUser(req, res) {
     const userId = req.params.id;
     try {
-      await this.userService.delete(userId);
-      res.status(200).json({ message: "User deleted successfully" });
+      const { role } = extractToken(req);
+      if (role === "admin") {
+        await this.userService.delete(userId);
+        res.status(200).json({ message: "User deleted successfully" });
+      } else {
+        ForbiddenResponse.sendUnauthorized(res);
+      }
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof ValidationError) {
         res.status(error.statusCode).json({ message: error.message });

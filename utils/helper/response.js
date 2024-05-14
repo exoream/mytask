@@ -38,10 +38,26 @@ class UnauthorizedError extends Error {
   }
 }
 
+class ForbiddenResponse {
+  static sendUnauthorized(res) {
+    return res.status(403).json({ message: "Unauthorized access" });
+  }
+}
+
+class UnauthorizedResponse {
+  static sendUnauthorized(res) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+}
+
+
 module.exports = {
   NotFoundError,
   ValidationError,
   DuplicateError,
   AuthenticationError,
   UnauthorizedError,
+  ForbiddenResponse,
+  UnauthorizedError,
+  UnauthorizedResponse,
 };
