@@ -92,3 +92,5 @@ class TaskService extends TaskServiceInterface {
     return deletedTask;
   }
 }
+
+module.exports = TaskService;
