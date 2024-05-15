@@ -1,4 +1,3 @@
-const { ValidationError } = require("sequelize");
 const { TaskServiceInterface } = require("../entity/interface");
 const {
   ValidationError,
@@ -35,8 +34,8 @@ class TaskService extends TaskServiceInterface {
       throw new ValidationError("Due date must be greater than current date");
     }
 
-    const task = await this.taskRepository.createTask(task);
-    return task;
+    const tasks = await this.taskRepository.createTask(task);
+    return tasks;
   }
 
   async getTaskById(id) {

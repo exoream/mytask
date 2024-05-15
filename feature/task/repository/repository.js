@@ -65,3 +65,5 @@ class TaskRepository extends TaskRepositoryInterface {
     return taskCore;
   }
 }
+
+module.exports = TaskRepository;
