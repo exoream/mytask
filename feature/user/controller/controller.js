@@ -11,6 +11,7 @@ const { userRequest } = require("../dto/request");
 const {
   successCreateResponse,
   successGetResponse,
+  serverErrorResponse,
 } = require("../../../utils/helper/response");
 const { userResponse, userListResponse, loginResponse } = require("../dto/response");
 
@@ -29,7 +30,7 @@ class UserController {
       if (error instanceof ValidationError || error instanceof DuplicateError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
-        res.status(500).json({ message: "Failed to create user" });
+        return serverErrorResponse(res, "Internal server error");
       }
     }
   }
@@ -53,7 +54,7 @@ class UserController {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         console.log(error);
-        res.status(500).json({ message: "Failed to get user" });
+        return serverErrorResponse(res, "Internal server error");
       }
     }
   }
@@ -71,7 +72,7 @@ class UserController {
       if (error instanceof NotFoundError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
-        res.status(500).json({ message: "Failed to get users" });
+        return serverErrorResponse(res, "Internal server error");
       }
     }
   }
@@ -96,7 +97,7 @@ class UserController {
       ) {
         res.status(error.statusCode).json({ message: error.message });
       }
-      res.status(500).json({ message: "Failed to update user" });
+      return serverErrorResponse(res, "Internal server error");
     }
   }
 
@@ -115,7 +116,7 @@ class UserController {
         res.status(error.statusCode).json({ message: error.message });
       }
 
-      res.status(500).json({ message: "Failed to delete user" });
+      return serverErrorResponse(res, "Internal server error");
     }
   }
 
@@ -134,7 +135,7 @@ class UserController {
       ) {
         res.status(error.statusCode).json({ error: error.message });
       }
-      res.status(500).json({ error: "Internal server error" });
+      return serverErrorResponse(res, "Internal server error");
     }
   }
 }

@@ -58,6 +58,10 @@ function successGetResponse(res, data) {
   return res.status(200).json({ message: data });
 }
 
+function serverErrorResponse(res, data) {
+  return res.status(500).json({ message: data });
+}
+
 
 module.exports = {
   NotFoundError,
@@ -70,4 +74,5 @@ module.exports = {
   UnauthorizedResponse,
   successCreateResponse,
   successGetResponse,
+  serverErrorResponse,
 };
