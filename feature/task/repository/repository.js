@@ -5,6 +5,7 @@ const {
   TaskModelToTaskCore,
   listTaskModelToListTaskCore,
 } = require("../entity/mapping");
+const Task = require("../model/model");
 
 class TaskRepository extends TaskRepositoryInterface {
   constructor(db) {
@@ -14,12 +15,12 @@ class TaskRepository extends TaskRepositoryInterface {
 
   async createTask(task) {
     const taskModel = TaskCoreToTaskModel(task);
-    const createdTask = await this.db.Task.create(taskModel);
+    const createdTask = await Task.create(taskModel);
     return TaskModelToTaskCore(createdTask);
   }
 
   async getTaskById(id) {
-    const task = await this.db.Task.findByPk(id);
+    const task = await Task.findByPk(id);
     if (!task) {
       throw new NotFoundError("Task not found");
     }
@@ -28,14 +29,14 @@ class TaskRepository extends TaskRepositoryInterface {
   }
 
   async getTasks() {
-    const tasks = await this.db.Task.findAll();
+    const tasks = await Task.findAll();
     const listTask = listTaskModelToListTaskCore(tasks);
     return listTask;
   }
 
   async updateTask(id, task) {
     const taskModel = TaskCoreToTaskModel(task);
-    const updatedTask = await this.db.Task.update(taskModel, {
+    const updatedTask = await Task.update(taskModel, {
       where: { id: id },
     });
     if (updatedTask[0] === 0) {
@@ -45,7 +46,7 @@ class TaskRepository extends TaskRepositoryInterface {
   }
 
   async deleteTask(id) {
-    const deletedTask = await this.db.Task.destroy({
+    const deletedTask = await Task.destroy({
       where: { id: id },
     });
     if (deletedTask === 0) {
@@ -54,9 +55,9 @@ class TaskRepository extends TaskRepositoryInterface {
     return true;
   }
 
-  async getTaskByName(name) {
-    const task = await this.db.Task.findOne({
-      where: { name: name },
+  async getTaskByName(title) {
+    const task = await Task.findOne({
+      where: { title: title },
     });
     if (!task) {
       return null;

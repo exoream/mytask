@@ -19,7 +19,7 @@ class TaskRepositoryInterface {
     throw new Error("Method not implemented");
   }
 
-  async getTaskByName(name) {
+  async getTaskByName(title) {
     throw new Error("Method not implemented");
   }
 }

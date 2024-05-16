@@ -1,6 +1,6 @@
 function taskRequest(body) {
-  const { title, description, dueDate } = body;
-  return { title, description, dueDate };
+  const { title, description, due_date } = body;
+  return { title, description, due_date };
 }
 
 

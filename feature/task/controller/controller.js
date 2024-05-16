@@ -5,6 +5,8 @@ const {
 } = require("../../../utils/helper/response");
 const { taskRequest } = require("../dto/request");
 const { taskResponse } = require("../dto/response");
+const { extractToken } = require("../../../utils/jwt/jwt");
+const { ValidationError, DuplicateError, NotFoundError } = require("../../../utils/helper/response");
 
 class TaskController {
   constructor(taskService) {
@@ -25,6 +27,7 @@ class TaskController {
       if (error instanceof ValidationError || error instanceof DuplicateError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
+        console.log(error);
         return serverErrorResponse(res, "Internal server error");
       }
     }

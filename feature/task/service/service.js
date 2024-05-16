@@ -19,11 +19,11 @@ class TaskService extends TaskServiceInterface {
       throw new ValidationError("Description is required");
     }
 
-    if (!task.dueDate) {
+    if (!task.due_date) {
       throw new ValidationError("Due date is required");
     }
 
-    const exitingTask = await this.taskRepository.getTaskByName(task.name);
+    const exitingTask = await this.taskRepository.getTaskByName(task.title);
     if (exitingTask) {
       throw new DuplicateError("Task already exists");
     }
