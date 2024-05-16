@@ -11,7 +11,7 @@ const UserTask = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -19,7 +19,7 @@ const UserTask = sequelize.define(
         key: "id",
       },
     },
-    taskId: {
+    task_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -27,7 +27,7 @@ const UserTask = sequelize.define(
         key: "id",
       },
     },
-    taskFile: {
+    task_file: {
       type: DataTypes.STRING,
       allowNull: true,
     },
