@@ -13,7 +13,11 @@ const {
   successGetResponse,
   serverErrorResponse,
 } = require("../../../utils/helper/response");
-const { userResponse, userListResponse, loginResponse } = require("../dto/response");
+const {
+  userResponse,
+  userListResponse,
+  loginResponse,
+} = require("../dto/response");
 
 class UserController {
   constructor(userService) {
@@ -69,7 +73,7 @@ class UserController {
         ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundError) {
+      if (error instanceof NotFoundError || error instanceof UnauthorizedError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         return serverErrorResponse(res, "Internal server error");
@@ -93,7 +97,8 @@ class UserController {
       if (
         error instanceof NotFoundError ||
         error instanceof ValidationError ||
-        error instanceof DuplicateError
+        error instanceof DuplicateError ||
+        error instanceof UnauthorizedError
       ) {
         res.status(error.statusCode).json({ message: error.message });
       }
@@ -112,7 +117,11 @@ class UserController {
         ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError) {
+      if (
+        error instanceof NotFoundError ||
+        error instanceof ValidationError ||
+        error instanceof UnauthorizedError
+      ) {
         res.status(error.statusCode).json({ message: error.message });
       }
 

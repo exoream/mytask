@@ -4,9 +4,15 @@ const {
   successGetResponse,
 } = require("../../../utils/helper/response");
 const { taskRequest } = require("../dto/request");
-const { taskResponse } = require("../dto/response");
+const { taskResponse, taskListResponse } = require("../dto/response");
 const { extractToken } = require("../../../utils/jwt/jwt");
-const { ValidationError, DuplicateError, NotFoundError } = require("../../../utils/helper/response");
+const {
+  ValidationError,
+  DuplicateError,
+  NotFoundError,
+  ForbiddenResponse,
+  UnauthorizedError,
+} = require("../../../utils/helper/response");
 
 class TaskController {
   constructor(taskService) {
@@ -24,7 +30,11 @@ class TaskController {
         ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof ValidationError || error instanceof DuplicateError) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof DuplicateError ||
+        error instanceof UnauthorizedError
+      ) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         console.log(error);
@@ -40,9 +50,11 @@ class TaskController {
       if (role === "admin") {
         const task = await this.taskService.getTaskById(taskId);
         return taskResponse(res, task);
+      } else {
+        ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError) {
+      if (error instanceof NotFoundError || error instanceof ValidationError || error instanceof UnauthorizedError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         return serverErrorResponse(res, "Internal server error");
@@ -55,10 +67,12 @@ class TaskController {
       const { role } = extractToken(req);
       if (role === "admin") {
         const tasks = await this.taskService.getTasks();
-        return taskResponse(res, tasks);
+        return taskListResponse(res, tasks);
+      } else {
+        ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError) {
+      if (error instanceof NotFoundError || error instanceof ValidationError || error instanceof UnauthorizedError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         return serverErrorResponse(res, "Internal server error");
@@ -78,7 +92,7 @@ class TaskController {
         ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof ValidationError || error instanceof NotFoundError) {
+      if (error instanceof ValidationError || error instanceof NotFoundError || error instanceof UnauthorizedError) {
         res.status(error.statusCode).json({ message: error.message });
       } else {
         return serverErrorResponse(res, "Internal server error");
@@ -97,7 +111,7 @@ class TaskController {
         ForbiddenResponse.sendUnauthorized(res);
       }
     } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError) {
+      if (error instanceof NotFoundError || error instanceof ValidationError || error instanceof UnauthorizedError) {
         res.status(error.statusCode).json({ message: error.message });
       }
       return serverErrorResponse(res, "Internal server error");
