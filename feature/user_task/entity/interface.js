@@ -1,9 +1,9 @@
 class UserTaskRepositoryInterface {
-  async inputTask(userTask) {
+  async inputTask(userTask, file) {
     throw new Error("Method not implemented");
   }
 
-  async updateTask(id, userTask) {
+  async updateTask(id, userTask, file) {
     throw new Error("Method not implemented");
   }
 
@@ -21,11 +21,11 @@ class UserTaskRepositoryInterface {
 }
 
 class UserTaskServiceInterface {
-  async inputTask(userTask) {
+  async inputTask(userTask, file) {
     throw new Error("Method not implemented");
   }
 
-  async updateTask(id, userTask) {
+  async updateTask(id, userTask, file) {
     throw new Error("Method not implemented");
   }
 
