@@ -1,8 +1,17 @@
 const { NotFoundError } = require("../../../utils/helper/response");
-const cloudinary = require("../../../utils/storage/cloudinary");
+
 const { UserTaskRepositoryInterface } = require("../entity/interface");
 const UserTask = require("../model/model");
+const { userTasksCoreToUserTasksModel, userTasksModelToUserTasksCore, listUserTasksCoreToListUserTasksModel } = require("../entity/mapping");
 
+const cloudinary = require("cloudinary").v2;
+require('dotenv').config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDNAME,
+  api_key: process.env.APIKEY,
+  api_secret: process.env.APISECRET,
+});
 class UserTaskRepository extends UserTaskRepositoryInterface {
   constructor(db) {
     super();
@@ -31,7 +40,7 @@ class UserTaskRepository extends UserTaskRepositoryInterface {
 
   async getAllUserTask() {
     const userTasks = await UserTask.findAll();
-    const userTaskList = listUserTaskModelToUserTaskCore(userTasks);
+    const userTaskList = listUserTasksCoreToListUserTasksModel(userTasks);
     return userTaskList;
   }
 
@@ -53,7 +62,7 @@ class UserTaskRepository extends UserTaskRepositoryInterface {
   async deleteTask(id) {
     const userTask = await UserTask.findByPk(id);
     if (!userTask) {
-        throw new NotFoundError("User task not found");
+      throw new NotFoundError("User task not found");
     }
     const taskFileUrl = userTask.task_file;
 

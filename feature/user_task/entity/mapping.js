@@ -1,6 +1,6 @@
 const UserTaskCore = require("../model/model");
 
-function UserTaskCoreToTaskModel(task) {
+function userTasksCoreToUserTasksModel(task) {
   return {
     id: task.id,
     user_id: task.userId,
@@ -11,7 +11,7 @@ function UserTaskCoreToTaskModel(task) {
   };
 }
 
-function UserTaskModelToTaskCore(task) {
+function userTasksModelToUserTasksCore(task) {
   const taskCore = new UserTaskCore(
     task.id,
     task.user_id,
@@ -23,7 +23,7 @@ function UserTaskModelToTaskCore(task) {
   return taskCore;
 }
 
-function listUserTaskCoreToListUserTaskModel(tasks) {
+function listUserTasksCoreToListUserTasksModel(tasks) {
   const listTask = [];
   for (const task of tasks) {
     const taskModel = UserTaskCoreToTaskModel(task);
@@ -32,7 +32,7 @@ function listUserTaskCoreToListUserTaskModel(tasks) {
   return listTask;
 }
 
-function listUserTaskModelToListUserTaskCore(tasks) {
+function listUserTasksModelToListUserTasksCore(tasks) {
   const listTask = [];
   for (const task of tasks) {
     const taskCore = UserTaskModelToTaskCore(task);
@@ -42,8 +42,8 @@ function listUserTaskModelToListUserTaskCore(tasks) {
 }
 
 module.exports = {
-  UserTaskCoreToTaskModel,
-  UserTaskModelToTaskCore,
-  listUserTaskCoreToListUserTaskModel,
-  listUserTaskModelToListUserTaskCore,
-};
+    userTasksCoreToUserTasksModel,
+    userTasksModelToUserTasksCore,
+    listUserTasksCoreToListUserTasksModel,
+    listUserTasksModelToListUserTasksCore,
+}

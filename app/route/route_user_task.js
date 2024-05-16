@@ -12,11 +12,15 @@ const userTaskService = new UserTaskService(userTaskRepo);
 const userTaskController = new UserTaskController(userTaskService);
 
 const router = express.Router();
-
-router.post('/tasks', jwtMiddleware, upload.single('file'), userTaskController.inputTask.bind(userTaskController));
-router.get('/tasks', jwtMiddleware, userTaskController.getAllUserTask.bind(userTaskController));
-router.get('/tasks/:id', jwtMiddleware, userTaskController.getUserTaskById.bind(userTaskController));
-router.put('/tasks/:id', jwtMiddleware, userTaskController.updateTask.bind(userTaskController));
-router.delete('/tasks/:id', jwtMiddleware, userTaskController.deleteTask.bind(userTaskController));
+router.post('/tasks/user', jwtMiddleware, upload.single('file'), (req, res, next) => {
+    console.log('File field name:', req.file.fieldname); // Debugging
+    next();
+  }, userTaskController.inputTask.bind(userTaskController));
+  
+// router.post('/tasks/user', jwtMiddleware, upload.single('file'), userTaskController.inputTask.bind(userTaskController));
+router.get('/tasks/user', jwtMiddleware, userTaskController.getAllUserTask.bind(userTaskController));
+router.get('/tasks/user/:id', jwtMiddleware, userTaskController.getUserTaskById.bind(userTaskController));
+router.put('/tasks/user/:id', jwtMiddleware, userTaskController.updateTask.bind(userTaskController));
+router.delete('/tasks/user/:id', jwtMiddleware, userTaskController.deleteTask.bind(userTaskController));
 
 module.exports = router;
