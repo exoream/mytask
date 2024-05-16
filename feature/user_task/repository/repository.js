@@ -3,15 +3,8 @@ const { NotFoundError } = require("../../../utils/helper/response");
 const { UserTaskRepositoryInterface } = require("../entity/interface");
 const UserTask = require("../model/model");
 const { userTasksCoreToUserTasksModel, userTasksModelToUserTasksCore, listUserTasksCoreToListUserTasksModel } = require("../entity/mapping");
+const { upload } = require("../../../utils/storage/cloudinary");
 
-const cloudinary = require("cloudinary").v2;
-require('dotenv').config();
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDNAME,
-  api_key: process.env.APIKEY,
-  api_secret: process.env.APISECRET,
-});
 class UserTaskRepository extends UserTaskRepositoryInterface {
   constructor(db) {
     super();
@@ -22,7 +15,7 @@ class UserTaskRepository extends UserTaskRepositoryInterface {
     const userTask = userTasksCoreToUserTasksModel(data);
 
     if (file) {
-      const cloudinaryResponse = await cloudinary.uploader.upload(file.path);
+      const cloudinaryResponse = await upload(file.path);
       userTask.task_file = cloudinaryResponse.secure_url;
     }
     const createdUserTask = await UserTask.create(userTask);
